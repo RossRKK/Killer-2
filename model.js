@@ -253,7 +253,7 @@ model.Game = class {
         //inform the subscribers of the event
         this.subscribers.forEach((sub) => {
             sub.pushEvent({
-                type: "replace",
+                type: "draw",
                 player: this.toBeDrawn[this.currentPlayer],
                 status: this.status()
             });
