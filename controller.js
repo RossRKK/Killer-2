@@ -51,6 +51,9 @@ exports.ws = function () {
             case "putThrough":
                 client.game.putThrough(msg.player);
                 break;
+            case "demote":
+                client.game.demote(msg.player);
+                break;
             default:
                 console.log("Unsupported action: " + msg.action);
                 break;

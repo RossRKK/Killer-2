@@ -420,7 +420,7 @@ model.Game = class {
 
     demote(player) {
         try {
-            let index = this.through.ideregisterSubscriptionndexOf(player);
+            let index = this.through.indexOf(player);
             //remove the player from the list
     	    this.through.splice(index, 1);
         } catch (e) {}
