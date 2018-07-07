@@ -23,6 +23,10 @@ var model = (function() {
 
         view.render(msg.status);
 
+        if (msg.status.hasStarted) {
+            view.start();
+        }
+
         switch (msg.type) {
             case "draw":
                 view.draw(msg.player);
