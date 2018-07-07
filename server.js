@@ -37,7 +37,8 @@ app.ws('/:gameId', function(ws, req) {
     console.log("Client has connected to game " + gameId);
 
     ws.on("close", function () {
-        //TODO handle socket close
+        //handle socket close, unregister subscriptions
+        ws.game.deregisterSubscription(ws);
     });
 
     ws.on('message', function(msg) {

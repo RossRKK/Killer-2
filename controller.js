@@ -25,44 +25,32 @@ exports.ws = function () {
      * @param msg The parsed JSON message.
      */
     function handleMessage(ws, msg) {
-        //TODO verify that the websocket belongs to the admin
         //handle incoming messages from clients
         switch (msg.action) {
             case "pot":
-                //TODO the ball was potted
+                //the ball was potted
+                ws.game.pot(msg.extraLives);
                 break;
             case "miss":
-                //TODO the pot was missed
+                //the pot was missed
+                ws.game.miss();
                 break;
-            case "addLives":
-                //TODO the black or multiple balls were potted
+            case "replace":
+                ws.game.replace();
+                break;
+            case "start":
+                ws.game.start();
+                break;
+            case "addPlayer":
+                ws.game.addPlayer(msg.player);
+                break;
+            default:
+                console.log("Unsupported action: " + msg.action);
                 break;
         }
     }
 
-    /**
-     * Push the updated state of a cycle to the client.
-     * @param ws Thw ebsocket to push back on.
-     * @param cycle The cycle to describe
-     */
-    function pushDrawnPlayer(ws, player) {
-        ws.send(JSON.stringify({
-                type: "draw",
-                player: player
-        }));
-    }
 
-    /**
-     * Push back that an event occurred
-     * @param ws The websocket to push back on.
-     * @param event The event that occured.
-     */
-    function pushEvent(ws, event) {
-        ws.send(JSON.stringify({
-            type: "event",
-            action: won,
-        }));
-    }
 
     return {
         handleMessage: handleMessage
