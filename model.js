@@ -383,13 +383,15 @@ model.Game = class {
                     let index = this.toBeDrawn.indexOf(player);
                     //remove the player from the list
             	    this.toBeDrawn.splice(index, 1);
+
+                    //it is necessary to call replace, as the currentPlayer index
+                    //will now be wrong
+                    this.replace();
                 }
             } else {
-                console.log(this.players)
                 let index = this.players.indexOf(player);
                 //remove the player from the list
                 this.players.splice(index, 1);
-                console.log(this.players)
             }
         } catch (e) {}
 
@@ -406,6 +408,10 @@ model.Game = class {
             let index = this.toBeDrawn.indexOf(player);
             //remove the player from the list
     	    this.toBeDrawn.splice(index, 1);
+
+            //it is necessary to call replace, as the currentPlayer index
+            //will now be wrong
+            this.replace();
         } catch (e) {}
 
         this.through.push(player);
@@ -426,6 +432,10 @@ model.Game = class {
         } catch (e) {}
 
         this.toBeDrawn.push(player);
+
+        //it is necessary to call replace, as the currentPlayer index
+        //will now be wrong
+        this.replace();
 
         this.subscribers.forEach((sub) => {
             sub.pushEvent({
