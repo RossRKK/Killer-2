@@ -56,5 +56,5 @@ app.use(function (err, req, res, next) {
 });
 
 
-app.listen(8080);
-console.log('Server running, access game by going to http://localhost:8080');
+app.listen(process.env.PORT);
+console.log('Server running');
