@@ -7,10 +7,10 @@ let controller = exports;
 
 exports.newGame = function (req, res) {
     //kick off a new game
-    let gameId = model.startGame();
+    let game = model.startGame();
     //return the new games id
     res.statusCode = 200;
-    res.end(gameId);
+    res.end(game.id);
 }
 
 /**
@@ -21,28 +21,35 @@ exports.ws = function () {
 
     /**
      * Handle incoming web socket messages.
-     * @param ws The websocket the message is coming from.
+     * @param client The client the message is coming from.
      * @param msg The parsed JSON message.
      */
-    function handleMessage(ws, msg) {
+    function handleMessage(client, msg) {
+        console.log(msg)
         //handle incoming messages from clients
         switch (msg.action) {
             case "pot":
                 //the ball was potted
-                ws.game.pot(msg.extraLives);
+                client.game.pot(msg.extraLives);
                 break;
             case "miss":
                 //the pot was missed
-                ws.game.miss();
+                client.game.miss();
                 break;
             case "replace":
-                ws.game.replace();
+                client.game.replace();
                 break;
             case "start":
-                ws.game.start();
+                client.game.start(msg.lives);
                 break;
             case "addPlayer":
-                ws.game.addPlayer(msg.player);
+                client.game.addPlayer(msg.player);
+                break;
+            case "remove":
+                client.game.remove(msg.player, msg.through);
+                break;
+            case "putThrough":
+                client.game.putThrough(msg.player);
                 break;
             default:
                 console.log("Unsupported action: " + msg.action);

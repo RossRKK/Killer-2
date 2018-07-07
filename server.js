@@ -26,23 +26,23 @@ app.use(bodyParser.json());
 app.post("/newgame", controller.newGame);
 
 // handle incoming WebSocket connections
-app.ws('/:gameId', function(ws, req) {
-    //TODO connect to the game
-    let gameId = req.param.gameId;
+app.ws('/:gameid', function(ws, req) {
+    //connect to the game
+    let gameId = req.params.gameid;
     let game = model.getGame(gameId);
+    let client = new modelModule.Client(ws);
 
-    game.registerSubscription(ws);
-    ws.game = game;
+    game.registerSubscription(client);
 
-    console.log("Client has connected to game " + gameId);
+    console.log("Client connected to game " + gameId);
 
     ws.on("close", function () {
         //handle socket close, unregister subscriptions
-        ws.game.deregisterSubscription(ws);
+        client.game.deregisterSubscription(client);
     });
 
     ws.on('message', function(msg) {
-        controller.ws.handleMessage(ws, JSON.parse(msg));
+        controller.ws.handleMessage(client, JSON.parse(msg));
     });
 });
 

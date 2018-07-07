@@ -1,3 +1,4 @@
+//let Math = require('mathjs');
 /**
  * Model for the game.
  */
@@ -18,10 +19,7 @@ model.Client = class {
      * @param evt the event that occured.
      */
     pushEvent(evt) {
-        this.ws.send(JSON.stringify({
-            type: "event",
-            evt: evt
-        }));
+        this.ws.send(JSON.stringify(evt));
     }
 }
 
@@ -36,9 +34,6 @@ model.Game = class {
      */
     constructor(id) {
         this.id = id;
-
-        //the number of lives each player will recieve
-        this.lifeCount = 3;
 
         //how many rounds have been played
         this.roundCount = 0;
@@ -74,33 +69,44 @@ model.Game = class {
     addPlayer(name) {
         if (this.hasStarted) {
             //add a player to the game that has alreay started
-            this.current.push(name);
+            this.toBeDrawn.push(name);
         } else {
             //add a player to the list of players who will be in the game
             this.players.push(name);
+            this.players.sort();
         }
+
+        //inform the subsribers of the start of the game
+        this.subscribers.forEach((sub) => {
+            sub.pushEvent({
+                type: "addPlayer",
+                status: this.status()
+            });
+        });
     }
 
     /**
      * Start the game.
      */
-    start() {
+    start(lives) {
         this.hasStarted = true;
 
-        //add lifeCount lives for each player
-        this.players.forEach((player) -> {
-            for (let i = 0; i < this.lifeCount; i++) {
-                this.current.push(player);
+        //add lives for each player
+        this.players.forEach((player) => {
+            for (let i = 0; i < lives; i++) {
+                this.toBeDrawn.push(player);
             }
         });
 
         //inform the subsribers of the start of the game
-        subscribers.forEach((sub) -> {
+        this.subscribers.forEach((sub) => {
             sub.pushEvent({
                 type: "start",
                 status: this.status()
             });
         });
+
+        this.draw();
     }
 
     /**
@@ -110,7 +116,7 @@ model.Game = class {
         let winner = this.determineWinner();
         if (winner) {
             //inform the players that a player has won
-            subscribers.forEach((sub) -> {
+            this.subscribers.forEach((sub) => {
                 sub.pushEvent({
                     type: "win",
                     player: winner,
@@ -121,13 +127,13 @@ model.Game = class {
             if (this.toBeDrawn.length > 0) {
                 //select a random player from the to be drawn de
 
-    			this.currentPlayer = math.floor(Math.random() * this.toBeDrawn.length);
+    			this.currentPlayer = Math.floor(Math.random() * this.toBeDrawn.length);
 
                 //increment the draw counter
                 this.drawCount++;
 
                 //inform the players that a player was drawn
-                subscribers.forEach((sub) -> {
+                this.subscribers.forEach((sub) => {
                     sub.pushEvent({
                         type: "draw",
                         player: this.toBeDrawn[this.currentPlayer],
@@ -141,11 +147,11 @@ model.Game = class {
     			this.draw();
     		} else {
     			//No one is through, reset the round
-    			this.current = this.losers;
+    			this.toBeDrawn = this.losers;
     			this.losers = [];
 
                 //inform the clients that the round was reset
-                subscribers.forEach((sub) -> {
+                this.subscribers.forEach((sub) => {
                     sub.pushEvent({
                         type: "reset",
                         status: this.status()
@@ -170,9 +176,9 @@ model.Game = class {
         this.losers = [];
 
         //inform the subscribers that the next round has been drawn
-        subscribers.forEach((sub) -> {
+        this.subscribers.forEach((sub) => {
             sub.pushEvent({
-                type: "draw",
+                type: "redraw",
                 player: this.toBeDrawn[this.currentPlayer],
                 status: this.status()
             });
@@ -194,11 +200,11 @@ model.Game = class {
             }
 
             //remove the player from the current list
-    	    this.toBeDrawn.splice(index, 1);
+    	    this.toBeDrawn.splice(this.currentPlayer, 1);
     	}
 
         //push back the new status of the game
-        subscribers.forEach((sub) -> {
+        this.subscribers.forEach((sub) => {
             sub.pushEvent({
                 type: "pot",
                 player: this.toBeDrawn[this.currentPlayer],
@@ -221,10 +227,10 @@ model.Game = class {
             this.losers.push(this.toBeDrawn[this.currentPlayer]);
 
             //remove the player from the current list
-    	    this.toBeDrawn.splice(index, 1);
+    	    this.toBeDrawn.splice(this.currentPlayer, 1);
     	}
 
-        subscribers.forEach((sub) -> {
+        this.subscribers.forEach((sub) => {
             sub.pushEvent({
                 type: "miss",
                 player: this.toBeDrawn[this.currentPlayer],
@@ -243,7 +249,7 @@ model.Game = class {
         this.currentPlayer = math.floor(Math.random() * this.toBeDrawn.length);
 
         //inform the subscribers of the event
-        subscribers.forEach((sub) -> {
+        this.subscribers.forEach((sub) => {
             sub.pushEvent({
                 type: "replace",
                 player: this.toBeDrawn[this.currentPlayer],
@@ -261,15 +267,17 @@ model.Game = class {
         all.concat(this.toBeDrawn);
         all.concat(this.through);
 
-        let winner = null;
-        for (let i = 0; i < all.lrngth; i++) {
-            let player = all[i];
-            if (all.every((elem) -> elem === player)) {
-                winner = player;
-                break;
+        if (all.length > 0) {
+            let winner = all[0];
+
+            for (let i = 1; i < all.length; i++) {
+                let player = all[i];
+                if (all[i] !== winner) {
+                    return null;
+                }
             }
+            return winner;
         }
-        return winner;
     }
 
     _groupLives(lives) {
@@ -284,33 +292,35 @@ model.Game = class {
 			if (i + 1 < lives.length && lives[i + 1] === lives[i]) {
 				groupingCount++;
 			} else if (groupingCount > 0) {
-				let name = current[i];
+				let name = lives[i];
 
 				//if this string says "flemming" or some variation
-				if (name.match("[Ff]le[mM]*ing")) {
+				if (name && name.match("[Ff]le[mM]*ing")) {
 					name = "Fle" + Array(groupingCount + 2).join("m") + "ing";
 				}
 
                 out.push({
                     name: name,
-                    lives: groupingCount
+                    lives: groupingCount + 1
                 });
 
                 groupingCount = 0;
 			} else {
-				let name = current[i];
+				let name = lives[i];
 
 				//if this string says "flemming" or some variation
-				if (name.match("[Ff]le[mM]*ing")) {
+				if (name && name.match("[Ff]le[mM]*ing")) {
 					name = "Fleming";
 				}
 
                 out.push({
                     name: name,
-                    lives: groupingCount
+                    lives: groupingCount + 1
                 });
 			}
 		}
+
+        return out;
     }
 
     /**
@@ -320,7 +330,8 @@ model.Game = class {
         return {
             hasStarted: this.hasStarted,
             toBeDrawn: this._groupLives(this.toBeDrawn),
-            through: this._groupLives(this.through)
+            through: this._groupLives(this.through),
+            players: this.players,
         };
     }
 
@@ -331,7 +342,12 @@ model.Game = class {
     registerSubscription(client) {
         this.subscribers.push(client);
 
-        client.pushStatus(this.status());
+        client.game = this;
+
+        client.pushEvent({
+            type: "subscribe",
+            status: this.status()
+        });
     }
 
     /**
@@ -343,6 +359,61 @@ model.Game = class {
         if (index > -1) {
             this.subscribers.splice(index, 1);
         }
+    }
+
+    remove(player, through) {
+        try {
+            if (through) {
+                let index = this.through.indexOf(player);
+                //remove the player from the list
+        	    this.through.splice(index, 1);
+            } else {
+                let index = this.toBeDrawn.indexOf(player);
+                //remove the player from the list
+        	    this.toBeDrawn.splice(index, 1);
+            }
+        } catch (e) {}
+
+        this.subscribers.forEach((sub) => {
+            sub.pushEvent({
+                type: "admin",
+                status: this.status()
+            });
+        });
+    }
+
+    putThrough(player) {
+        try {
+            let index = this.toBeDrawn.indexOf(player);
+            //remove the player from the list
+    	    this.toBeDrawn.splice(index, 1);
+        } catch (e) {}
+
+        this.through.push(player);
+
+        this.subscribers.forEach((sub) => {
+            sub.pushEvent({
+                type: "admin",
+                status: this.status()
+            });
+        });
+    }
+
+    demote(player) {
+        try {
+            let index = this.through.indexOf(player);
+            //remove the player from the list
+    	    this.through.splice(index, 1);
+        } catch (e) {}
+
+        this.toBeDrawn.push(player);
+
+        this.subscribers.forEach((sub) => {
+            sub.pushEvent({
+                type: "admin",
+                status: this.status()
+            });
+        });
     }
 };
 
@@ -362,7 +433,7 @@ model.Model = class {
      * @returns {model.Game} The new game.
      */
     startGame() {
-        let id = genId();
+        let id = this.genId();
         let game = new model.Game(id);
 
         this.games[id] = game;
@@ -370,7 +441,7 @@ model.Model = class {
         return game;
     }
 
-    static genId() {
+    genId() {
         let id = "";
         const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 

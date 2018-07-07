@@ -1,0 +1,24 @@
+button, input[type=button] {
+	margin: 0.5rem;
+	cursor: pointer;
+}
+
+input[type=text], input[type=number] {
+	max-width: 40em;
+}
+
+.curDraw {
+	padding: 1rem;
+}
+
+#player {
+	font-weight: bold;
+}
+
+#rulesTitle {
+	cursor: pointer;
+}
+
+.player {
+	padding: 0px;
+}

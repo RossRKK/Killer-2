@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<title>Killer</title>
+
+		<!-- Font Awesome -->
+	  <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+	  <!-- Bootstrap -->
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+	  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!--Load the scripts and style sheet-->
+		<script type = "text/Javascript" src = "https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<link rel="stylesheet" href="style.css">
+		<script type = "text/Javascript" src = "model.js"></script>
+		<script type = "text/Javascript" src = "view.js"></script>
+		<script type = "text/Javascript" src = "controller.js"></script>
+	</head>
+	<body>
+	<div class="container">
+		<h1>Killer</h1>
+		<p><h2>Rules</h2><span id="rulesTitle">(expand)</span></p>
+		<div id="rules">
+			<p>In killer each player is given a certain number of lives (normally 3).</p>
+			<p>Enter the name of each player in the "Add Player" section. Once you have entered the name of each player press start.</p>
+			<p>Every turn a player is randomly picked from the "To Be Drawn" list, this player must then take a shot.</p>
+			<p>If the player is unavailable you can press "Replace" to select another player.</p>
+			<p>The player must now attempt to pot a ball.
+				<li>If they pot press the "Pot" button, this puts their life through to the next round.</li>
+				<li>If they miss press the "Miss" button, this removes their life.</li>
+				<li>If they gain lives enter the number they gained and press "Add Lives".
+					<br/>A player gains a life for potting the black and an extra life for every ball they pot after the first, however a fowl subtracts one life.</li>
+			</p>
+			<p>If you make a mistake you can correct it by using the "Promote", "Demote" and "X" buttons.
+				<li>"Promote" moves that life from the "To Be Drawn" section to the "Through" section.</li>
+				<li>"Demote" moves that life from the "Through" section to the "To Be Drawn" section</li>
+				<li>"X" removes that life from the game,</li>
+				You can also add lives back in using the "Add Player" section as before.
+			</p>
+			<p>The winner is the last player standing</p>
+		</div>
+		<div id="chooseGame">
+			<h2>Start New Game</h2>
+			<button class="btn btn-default" onclick="controller.newGame()">New Game</button>
+			<hr>
+			<h2>Join Existing Game</h2>
+			Game ID: <input type="text" class="form-control" id="gameIdIn"/><button class="btn btn-default" onclick="controller.joinGame()">Join Game</button>
+		</div>
+		<div id="game">
+			<h2 id="gameId"></h2>
+
+			<div id="curDraw">
+				<div id="player"></div>
+				<button class="btn btn-default" onclick="controller.pot()">Pot</button>
+				<button class="btn btn-default" onclick="controller.miss()">Miss</button>
+				<button class="btn btn-default" onclick="controller.replace()">Replace</button>
+				<div><input class="form-control" id="lives" type="number" value="1"/><button class="btn btn-default" onclick="controller.addLives()">Add Lives</button></div>
+			</div>
+
+			<div id="settings">
+				<button class="btn btn-default" id="start" onclick="controller.start()">Start</button>
+				<h3>Add Player:</h3>
+				<form id="addPlayer"><div id="lifeCount">No. Lives: <input class="form-control" type="number" id="noLives" value = "3"></div></input> Name: <input type="text" class="form-control" id="add"/><button  class="btn btn-default" type = "submit" >Add</button></form>
+			</div>
+
+			<div id="players"></div>
+		</div>
+	</div>
+	</body>
+</html>
