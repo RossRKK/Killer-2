@@ -30,11 +30,16 @@ app.ws('/:gameid', function(ws, req) {
     //connect to the game
     let gameId = req.params.gameid;
     let game = model.getGame(gameId);
+
     let client = new modelModule.Client(ws);
 
-    game.registerSubscription(client);
+    if (game) {
+        game.registerSubscription(client);
 
-    console.log("Client connected to game " + gameId);
+        console.log("Client connected to game " + gameId);
+    } else {
+        ws.close();
+    }
 
     ws.on("close", function () {
         //handle socket close, unregister subscriptions
@@ -57,4 +62,4 @@ app.use(function (err, req, res, next) {
 
 
 app.listen(process.env.PORT);
-console.log('Server running');
+console.log('Server running on port ' + process.env.PORT);

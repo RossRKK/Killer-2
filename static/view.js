@@ -3,11 +3,15 @@
 var rulesOpen = false;
 
 var view = function () {
+	var prevStatus;
 
 	function init() {
 		$("#game").hide();
 		$("#curDraw").hide();
 		$("#rules").hide();
+
+		$("#game").hide();
+		$("#chooseGame").show();
 	}
 
 	function start() {
@@ -23,9 +27,14 @@ var view = function () {
 
 	//Re-render the page
 	function render(status) {
-		$("#players").empty();
+		if (status) {
+			prevStatus = status;
+		} else {
+			status = prevStatus;
+		}
 
-			if (status.hasStarted) {
+		$("#players").empty();
+		if (status.hasStarted) {
 
 			$("#players").append("<h3>To Be Drawn: " + status.toBeDrawn.length + "</h3><table>")
 
@@ -37,9 +46,13 @@ var view = function () {
 
 			$("#players").append("</table>");
 		} else {
+			$("#players").append("<h3>Players: " + status.players.length +
+			" (" + ($("#noLives").val() * status.players.length)  + " lives)</h3><table>");
+
 			status.players.forEach(function (player) {
-				$("#players").append("<tr><td><div class=\"player\">" + player + "</td></tr>");
+				$("#players").append("<tr><td><div class=\"player\">" + player + "</div></td><td><button class=\"remove btn btn-default\" data-player=\"" + player + "\">X</button></td></tr>");
 			});
+			$("#players").append("</table>");
 		}
 
 		controller.bindListHandlers();

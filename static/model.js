@@ -143,7 +143,8 @@ var model = (function() {
         ws.addEventListener("message", handleMessage);
 
         ws.addEventListener("close", function () {
-            console.log("socket closed")
+            console.log("socket closed");
+            view.init();
         });
 
         ws.addEventListener("error", function () {

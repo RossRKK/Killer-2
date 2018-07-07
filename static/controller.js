@@ -6,6 +6,10 @@ var controller = (function () {
 				addPlayer();
 		});
 
+        $("#noLives").on("change", function(e) {
+            view.render();
+        });
+
 		$("#rulesTitle").click(function(e) {
 	    	e.preventDefault();
 			$("#rules").toggle();

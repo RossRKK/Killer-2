@@ -32,8 +32,10 @@ model.Game = class {
      * Create a new game.
      * @param id The games unique id.
      */
-    constructor(id) {
+    constructor(id, m) {
         this.id = id;
+        this.model = m;
+
 
         //how many rounds have been played
         this.roundCount = 0;
@@ -359,18 +361,31 @@ model.Game = class {
         if (index > -1) {
             this.subscribers.splice(index, 1);
         }
+
+        //remove the game if no one is playing anymore
+        if (this.subscribers.length === 0) {
+            this.model.disposeGame(this.id);
+        }
     }
 
     remove(player, through) {
         try {
-            if (through) {
-                let index = this.through.indexOf(player);
-                //remove the player from the list
-        	    this.through.splice(index, 1);
+            if (this.hasStarted) {
+                if (through) {
+                    let index = this.through.indexOf(player);
+                    //remove the player from the list
+            	    this.through.splice(index, 1);
+                } else {
+                    let index = this.toBeDrawn.indexOf(player);
+                    //remove the player from the list
+            	    this.toBeDrawn.splice(index, 1);
+                }
             } else {
-                let index = this.toBeDrawn.indexOf(player);
+                console.log(this.players)
+                let index = this.players.indexOf(player);
                 //remove the player from the list
-        	    this.toBeDrawn.splice(index, 1);
+                this.players.splice(index, 1);
+                console.log(this.players)
             }
         } catch (e) {}
 
@@ -401,7 +416,7 @@ model.Game = class {
 
     demote(player) {
         try {
-            let index = this.through.indexOf(player);
+            let index = this.through.ideregisterSubscriptionndexOf(player);
             //remove the player from the list
     	    this.through.splice(index, 1);
         } catch (e) {}
@@ -434,7 +449,7 @@ model.Model = class {
      */
     startGame() {
         let id = this.genId();
-        let game = new model.Game(id);
+        let game = new model.Game(id, this);
 
         this.games[id] = game;
 
@@ -443,7 +458,7 @@ model.Model = class {
 
     genId() {
         let id = "";
-        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         for (var i = 0; i < 5; i++)
             id += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -453,5 +468,14 @@ model.Model = class {
 
     getGame(id) {
         return this.games[id.toUpperCase()];
+    }
+
+    disposeGame(id) {
+        //wait a minute before disposing
+        setTimeout(() => {
+            if (this.games[id] && this.games[id].subscribers.length === 0) {
+                delete this.games[id];
+            }
+        }, 600000);
     }
 };
