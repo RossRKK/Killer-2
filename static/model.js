@@ -126,7 +126,7 @@ var model = (function() {
      * Initialise the web socket connection.
      */
     function init(gameId) {
-        ws = new WebSocket("ws://localhost:8080/" + gameId);
+        ws = new WebSocket("ws://" + window.location.hostname + "/" + gameId);
         //ws = new WebSocket("ws://echo.websocket.org");
         ws.addEventListener("open", function () {
             console.log("socket opended");
