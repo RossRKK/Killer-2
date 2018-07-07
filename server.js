@@ -43,7 +43,9 @@ app.ws('/:gameid', function(ws, req) {
 
     ws.on("close", function () {
         //handle socket close, unregister subscriptions
-        client.game.deregisterSubscription(client);
+        if (client.game) {
+            client.game.deregisterSubscription(client);
+        }
     });
 
     ws.on('message', function(msg) {
@@ -61,5 +63,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-app.listen(process.env.PORT);
-console.log('Server running on port ' + process.env.PORT);
+let port = process.env.PORT ? process.env.PORT : 8080;
+
+app.listen(port);
+console.log('Server running on port ' + port);

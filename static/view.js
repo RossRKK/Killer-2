@@ -97,6 +97,7 @@ var view = function () {
 		render: render,
 		redraw: redraw,
 		reset: reset,
+		winner: winner,
 		gameId: gameId,
 	}
 }();

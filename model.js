@@ -161,7 +161,7 @@ model.Game = class {
                 });
 
                 //increment the round count
-                roundCount++;
+                this.roundCount++;
 
                 //draw a new player
     			this.draw();
@@ -248,7 +248,7 @@ model.Game = class {
      * Draw another player to replace the current one with no consequence.
      */
     replace() {
-        this.currentPlayer = math.floor(Math.random() * this.toBeDrawn.length);
+        this.currentPlayer = Math.floor(Math.random() * this.toBeDrawn.length);
 
         //inform the subscribers of the event
         this.subscribers.forEach((sub) => {
@@ -266,8 +266,10 @@ model.Game = class {
     determineWinner() {
         let all = [];
 
-        all.concat(this.toBeDrawn);
-        all.concat(this.through);
+        this.toBeDrawn.forEach((player) => all.push(player));
+        this.through.forEach((player) => all.push(player));
+
+        console.log(all);
 
         if (all.length > 0) {
             let winner = all[0];
@@ -279,7 +281,9 @@ model.Game = class {
                 }
             }
             return winner;
+            console.log(winner);
         }
+        console.log("No winner");
     }
 
     _groupLives(lives) {
