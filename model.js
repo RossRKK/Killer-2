@@ -72,6 +72,10 @@ model.Game = class {
         if (this.hasStarted) {
             //add a player to the game that has alreay started
             this.toBeDrawn.push(name);
+
+            //it is necessary to call replace, as the currentPlayer index
+            //will now be wrong
+            this.replace();
         } else {
             //add a player to the list of players who will be in the game
             this.players.push(name);
