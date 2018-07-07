@@ -89,6 +89,9 @@ var view = function () {
 		$("#gameId").text(id);
 		$("#game").show();
 		$("#chooseGame").hide();
+
+		//make it easy to reload this game if the connection times out
+		$("#gameIdIn").val(id);
 	}
 
 	return {
