@@ -12,6 +12,7 @@ var view = function () {
 
 		$("#game").hide();
 		$("#chooseGame").show();
+		$("#start").show();
 	}
 
 	function start() {
