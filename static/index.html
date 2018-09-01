@@ -21,6 +21,7 @@
 	<body>
 	<div class="container">
 		<h1>Killer</h1>
+        <span class="settings"><button id="toggle-control" onclick="controller.toggleControlsClick()" class="btn btn-default">Toggle Controls</button></span>
 		<p><h2>Rules</h2><span id="rulesTitle">(expand)</span></p>
 		<div id="rules">
 			<p>In killer each player is given a certain number of lives (normally 3).</p>
@@ -50,16 +51,15 @@
 		</div>
 		<div id="game">
 			<h2 id="gameId"></h2>
-
 			<div id="curDraw">
 				<div id="player"></div>
-				<button class="btn btn-default" onclick="controller.pot()">Pot</button>
-				<button class="btn btn-default" onclick="controller.miss()">Miss</button>
-				<button class="btn btn-default" onclick="controller.replace()">Replace</button>
-				<div><input class="form-control" id="lives" type="number" value="1"/><button class="btn btn-default" onclick="controller.addLives()">Add Lives</button></div>
+				<button class="control btn btn-default" onclick="controller.pot()">Pot</button>
+				<button class="control btn btn-default" onclick="controller.miss()">Miss</button>
+				<button class="control btn btn-default" onclick="controller.replace()">Replace</button>
+				<div class="control"><input class="form-control" id="lives" type="number" value="1"/><button class="btn btn-default" onclick="controller.addLives()">Add Lives</button></div>
 			</div>
 
-			<div id="settings">
+			<div id="settings" class="control">
 				<button class="btn btn-default" id="start" onclick="controller.start()">Start</button>
 				<h3>Add Player:</h3>
 				<form id="addPlayer"><div id="lifeCount">No. Lives: <input class="form-control" type="number" id="noLives" value = "3"></div></input> Name: <input type="text" class="form-control" id="add"/><button  class="btn btn-default" type = "submit" >Add</button></form>

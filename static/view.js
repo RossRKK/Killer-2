@@ -22,17 +22,22 @@ var view = function () {
 	}
 
 	function listLives(player, through) {
-		$("#players").append("<tr><td><div class=\"player\">" + player.name + " (" + player.lives + ")</td><td><button class=\"" + (through ? "demote" : "putThrough") + " btn btn-default\" data-player=\"" + player.name + "\">" + (through ? "Demote" : "Put Through") +
-		"</button><button class=\"remove btn btn-default\" data-player=\"" + player.name + "\" data-through=\"" + through + "\">X</button></div></td></tr>");
+		$("#players").append("<tr><td><div class=\"player\">" + player.name + " (" + player.lives + ")</td><td><button class=\"" + (through ? "demote" : "putThrough") + " control btn btn-default\" data-player=\"" + player.name + "\">" + (through ? "Demote" : "Put Through") +
+		"</button><button class=\"control remove btn btn-default\" data-player=\"" + player.name + "\" data-through=\"" + through + "\">X</button></div></td></tr>");
 	}
 
 	//Re-render the page
-	function render(status) {
+	function render(status, controlEnabled) {
 		if (status) {
 			prevStatus = status;
 		} else {
 			status = prevStatus;
 		}
+
+        //ensure that the currently drawn player is up to data
+        //do'nt animate since it's probably right
+        $("#player").empty();
+        $("#player").append(status.drawn);
 
 		$("#players").empty();
 		if (status.hasStarted) {
@@ -57,9 +62,9 @@ var view = function () {
 		}
 
 		controller.bindListHandlers();
+
+        controlEnabled ? enableControls() : disableControls();
 	}
-
-
 
 	function draw(player) {
 		$("#player").fadeOut(400, "swing", function () {
@@ -94,6 +99,14 @@ var view = function () {
 		$("#gameIdIn").val(id);
 	}
 
+    function disableControls() {
+        $(".control").hide();
+    }
+
+    function enableControls() {
+        $(".control").show();
+    }
+
 	return {
 		init: init,
 		start:  start,
@@ -103,5 +116,7 @@ var view = function () {
 		reset: reset,
 		winner: winner,
 		gameId: gameId,
+        disableControls: disableControls,
+        enableControls: enableControls,
 	}
 }();

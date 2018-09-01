@@ -6,12 +6,34 @@ var model = (function() {
      */
     var ws;
 
+    /**
+     * Whether the controls should be enabled.
+     */
+    var controlEnabled = true;
+
     $(document).ready(function () {
 
         view.init();
         controller.init();
     });
 
+    function disableControls() {
+        controlEnabled = false;
+
+        view.disableControls();
+    }
+
+    function enableControls() {
+        controlEnabled = true;
+
+        view.enableControls();
+    }
+
+    function toggleControls() {
+        controlEnabled = !controlEnabled;
+
+        controlEnabled ? view.enableControls() : view.disableControls();
+    }
 
     /**
      * Handle incoming messages from the server.
@@ -21,7 +43,7 @@ var model = (function() {
 
         console.log(msg);
 
-        view.render(msg.status);
+        view.render(msg.status, controlEnabled);
 
         if (msg.status.hasStarted) {
             view.start();
@@ -167,5 +189,9 @@ var model = (function() {
         putThrough: putThrough,
         demote: demote,
         remove: remove,
+
+        disableControls: disableControls,
+        enableControls: enableControls,
+        toggleControls: toggleControls,
     }
 })();

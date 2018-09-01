@@ -338,6 +338,7 @@ model.Game = class {
      */
     status() {
         return {
+            drawn: this.toBeDrawn[this.currentPlayer],
             hasStarted: this.hasStarted,
             toBeDrawn: this._groupLives(this.toBeDrawn),
             through: this._groupLives(this.through),

@@ -81,12 +81,20 @@ var controller = (function () {
             model.init(gameId);
             view.gameId(gameId);
         });
+
+        model.enableControls();
     }
 
     function joinGame() {
         var gameId = $("#gameIdIn").val();
         model.init(gameId);
         view.gameId(gameId);
+
+        model.disableControls();
+    }
+
+    function toggleControlsClick() {
+        model.toggleControls();
     }
 
     return {
@@ -99,5 +107,6 @@ var controller = (function () {
         bindListHandlers: bindListHandlers,
         newGame: newGame,
         joinGame: joinGame,
+        toggleControlsClick: toggleControlsClick,
 	}
 }());

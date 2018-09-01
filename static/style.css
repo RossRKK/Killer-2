@@ -22,3 +22,8 @@ input[type=text], input[type=number] {
 .player {
 	padding: 0px;
 }
+
+
+.settings {
+    float:right;
+}
