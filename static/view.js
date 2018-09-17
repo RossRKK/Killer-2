@@ -67,13 +67,21 @@ var view = function () {
 
     //the name of the player currently being displayed
     var currentPlayer = null;
-    var fadeComplete = false;
+    var fadeComplete = true;
+    var fadeStarted = false;
 
 	function draw(player) {
         if (fadeComplete) {
-            showName(player);
-            fadeComplete = false;
+            if (!fadeStarted) {
+                //this is the case where the draw was done on a remote client
+                currentPlayer = player;
+                fadeOut();
+            } else {
+                //this is when the name has finished fading out when the name comes back
+                showName(player);
+            }
         } else {
+            //this is when the drawn player comes back before the animation completes
             currentPlayer = player;
         }
 	}
@@ -98,12 +106,14 @@ var view = function () {
 
     function fadeOut() {
         fadeComplete = false;
+        fadeStarted = true;
         $("#player").fadeOut(400, "swing", function () {
             if (currentPlayer) {
                 showName(currentPlayer);
                 currentPlayer = null;
             }
             fadeComplete = true;
+            fadeStarted = false;
         });
     }
 
