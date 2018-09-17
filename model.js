@@ -1,4 +1,3 @@
-//let Math = require('mathjs');
 /**
  * Model for the game.
  */
@@ -151,7 +150,7 @@ model.Game = class {
                 //redraw
     			this.redraw();
     			this.draw();
-    		} else {
+    		} else if (this.losers.length > 0){
     			//No one is through, reset the round
     			this.toBeDrawn = this.losers;
     			this.losers = [];

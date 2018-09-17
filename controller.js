@@ -54,6 +54,9 @@ exports.ws = function () {
             case "demote":
                 client.game.demote(msg.player);
                 break;
+            case "ping":
+                //ignore ping messages
+                break;
             default:
                 console.log("Unsupported action: " + msg.action);
                 break;

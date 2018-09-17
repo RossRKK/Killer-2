@@ -34,10 +34,9 @@ var view = function () {
 			status = prevStatus;
 		}
 
-        //ensure that the currently drawn player is up to data
-        //do'nt animate since it's probably right
-        $("#player").empty();
-        $("#player").append(status.drawn);
+        if (!$("#player").text()) {
+            showName(status.drawn);
+        }
 
 		$("#players").empty();
 		if (status.hasStarted) {
@@ -56,7 +55,7 @@ var view = function () {
 			" (" + ($("#noLives").val() * status.players.length)  + " lives)</h3><table>");
 
 			status.players.forEach(function (player) {
-				$("#players").append("<tr><td><div class=\"player\">" + player + "</div></td><td><button class=\"remove btn btn-default\" data-player=\"" + player + "\">X</button></td></tr>");
+				$("#players").append("<tr><td><div class=\"player\">" + player + "</div></td><td><button class=\"remove control btn btn-default\" data-player=\"" + player + "\">X</button></td></tr>");
 			});
 			$("#players").append("</table>");
 		}
@@ -66,20 +65,21 @@ var view = function () {
         controlEnabled ? enableControls() : disableControls();
 	}
 
+    //the name of the player currently being displayed
+    var currentPlayer = null;
+    var fadeComplete = false;
+
 	function draw(player) {
-		$("#player").fadeOut(400, "swing", function () {
-			$("#player").empty();
-			$("#player").append(player);
-			$("#player").fadeIn();
-		});
+        if (fadeComplete) {
+            showName(player);
+            fadeComplete = false;
+        } else {
+            currentPlayer = player;
+        }
 	}
 
 	function winner(player) {
-		$("#player").fadeOut(400, "swing", function () {
-			$("#player").empty();
-			$("#player").append("The winner is: " + player);
-			$("#player").fadeIn();
-		});
+        currentPlayer = "The winner is: " + player;
 	}
 
 	function redraw() {
@@ -89,6 +89,23 @@ var view = function () {
 	function reset() {
 		alert("Reset");
 	}
+
+    function showName(player) {
+        $("#player").empty();
+        $("#player").append(player);
+        $("#player").fadeIn();
+    }
+
+    function fadeOut() {
+        fadeComplete = false;
+        $("#player").fadeOut(400, "swing", function () {
+            if (currentPlayer) {
+                showName(currentPlayer);
+                currentPlayer = null;
+            }
+            fadeComplete = true;
+        });
+    }
 
 	function gameId(id) {
 		$("#gameId").text(id);
@@ -118,5 +135,6 @@ var view = function () {
 		gameId: gameId,
         disableControls: disableControls,
         enableControls: enableControls,
+        fadeOut: fadeOut,
 	}
 }();

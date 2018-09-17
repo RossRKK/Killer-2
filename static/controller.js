@@ -7,7 +7,7 @@ var controller = (function () {
 		});
 
         $("#noLives").on("change", function(e) {
-            view.render();
+            model.promptRender();
         });
 
 		$("#rulesTitle").click(function(e) {
@@ -73,7 +73,8 @@ var controller = (function () {
 	//Start the game
 	function start() {
         var noLives = $("#noLives").val();
-		model.start(noLives);
+
+    	model.start(noLives);
 	}
 
     function newGame() {

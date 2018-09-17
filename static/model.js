@@ -1,5 +1,7 @@
 "use strict";
 
+var update = true;
+
 var model = (function() {
     /**
      * The websocket this client uses to communicate to the server.
@@ -10,6 +12,11 @@ var model = (function() {
      * Whether the controls should be enabled.
      */
     var controlEnabled = true;
+
+    /**
+     * The current status of the game.
+     */
+    var currentStatus;
 
     $(document).ready(function () {
 
@@ -43,7 +50,9 @@ var model = (function() {
 
         console.log(msg);
 
-        view.render(msg.status, controlEnabled);
+        currentStatus = msg.status;
+
+        promptRender(msg.status);
 
         if (msg.status.hasStarted) {
             view.start();
@@ -68,6 +77,10 @@ var model = (function() {
         }
     }
 
+    function promptRender(status) {
+        view.render(status, controlEnabled);
+    }
+
     /**
      * Tell the server to add another player.
      * @param player The name of the player to add.
@@ -84,6 +97,8 @@ var model = (function() {
      * @param extraLives The number of extra lives the player should recieve.
      */
     function pot(extraLives) {
+        view.fadeOut();
+
         ws.send(JSON.stringify({
             action: "pot",
             extraLives: extraLives
@@ -94,6 +109,8 @@ var model = (function() {
      * Tell the server that the player missed.
      */
     function miss() {
+        view.fadeOut();
+
         ws.send(JSON.stringify({
             action: "miss",
         }));
@@ -103,6 +120,8 @@ var model = (function() {
      * Tell the server to replace the current player.
      */
     function replace() {
+        view.fadeOut();
+
         ws.send(JSON.stringify({
             action: "replace",
         }));
@@ -112,10 +131,15 @@ var model = (function() {
      * Tell the server to start the game.
      */
     function start(lives) {
-        ws.send(JSON.stringify({
-            action: "start",
-            lives: lives
-        }));
+        //check that there is at least 2 players
+        if (currentStatus.players.length > 1) {
+            ws.send(JSON.stringify({
+                action: "start",
+                lives: lives
+            }));
+        } else {
+            alert("There must be players to start a game");
+        }
     }
 
     function remove(player, through) {
@@ -147,6 +171,16 @@ var model = (function() {
         });
     }
 
+    //30s ping
+    var pingInterval = 30000;
+
+    var pingId;
+
+    function ping() {
+        ws.send(JSON.stringify({
+            action: "ping"
+        }));
+    }
 
     /**
      * Initialise the web socket connection.
@@ -164,18 +198,22 @@ var model = (function() {
         //ws = new WebSocket("ws://echo.websocket.org");
         ws.addEventListener("open", function () {
             console.log("socket opended");
+            pingId = setInterval(ping, pingInterval);
         });
 
         ws.addEventListener("message", handleMessage);
 
         ws.addEventListener("close", function () {
             console.log("socket closed");
+            clearInterval(pingId);
             view.init();
         });
 
         ws.addEventListener("error", function () {
             console.err("socket error")
         });
+
+
     }
 
     return {
@@ -193,5 +231,6 @@ var model = (function() {
         disableControls: disableControls,
         enableControls: enableControls,
         toggleControls: toggleControls,
+        promptRender: promptRender,
     }
 })();
