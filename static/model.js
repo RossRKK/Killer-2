@@ -90,6 +90,8 @@ var model = (function() {
             action: "addPlayer",
             player: player
         }));
+
+        view.clearPlayer();
     }
 
     /**

@@ -272,6 +272,11 @@ model.Game = class {
         this.toBeDrawn.forEach((player) => all.push(player));
         this.through.forEach((player) => all.push(player));
 
+        //if no one is through then we have to count the losers as well
+        if (this.through.length === 0) {
+            this.losers.forEach((player) => all.push(player));
+        }
+
         console.log(all);
 
         if (all.length > 0) {

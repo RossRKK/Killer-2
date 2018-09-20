@@ -134,6 +134,10 @@ var view = function () {
         $(".control").show();
     }
 
+    function clearPlayer() {
+        $("#add").val("");
+    }
+
 	return {
 		init: init,
 		start:  start,
@@ -146,5 +150,6 @@ var view = function () {
         disableControls: disableControls,
         enableControls: enableControls,
         fadeOut: fadeOut,
+        clearPlayer: clearPlayer,
 	}
 }();
