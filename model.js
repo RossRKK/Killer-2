@@ -69,12 +69,14 @@ model.Game = class {
      */
     addPlayer(name) {
         if (this.hasStarted) {
+            let curPlayer = this.toBeDrawn[this.currentPlayer];
             //add a player to the game that has alreay started
             this.toBeDrawn.push(name);
 
             //it is necessary to call replace, as the currentPlayer index
             //will now be wrong
-            this.replace();
+            //this.replace();
+            this.restoreDrawnPlayer(curPlayer);
         } else {
             //add a player to the list of players who will be in the game
             this.players.push(name);
@@ -263,6 +265,16 @@ model.Game = class {
         });
     }
 
+    restoreDrawnPlayer(player) {
+        this.currentPlayer = this.toBeDrawn.indexOf(player);
+
+        //if the operation performed removed the last instance of that player
+        //do a replace
+        if (this.currentPlayer === -1) {
+            this.replace();
+        }
+    }
+
     /**
      * Determine which player won the game.
      */
@@ -295,6 +307,7 @@ model.Game = class {
     }
 
     _groupLives(lives) {
+        lives = lives.slice();
         lives.sort();
 
         let out = [];
@@ -389,13 +402,15 @@ model.Game = class {
                     //remove the player from the list
             	    this.through.splice(index, 1);
                 } else {
+                    let curPlayer = this.toBeDrawn[this.currentPlayer];
                     let index = this.toBeDrawn.indexOf(player);
                     //remove the player from the list
             	    this.toBeDrawn.splice(index, 1);
 
                     //it is necessary to call replace, as the currentPlayer index
                     //will now be wrong
-                    this.replace();
+                    //this.replace();
+                    this.restoreDrawnPlayer(curPlayer);
                 }
             } else {
                 let index = this.players.indexOf(player);
@@ -414,13 +429,15 @@ model.Game = class {
 
     putThrough(player) {
         try {
+            let curPlayer = this.toBeDrawn[this.currentPlayer];
             let index = this.toBeDrawn.indexOf(player);
             //remove the player from the list
     	    this.toBeDrawn.splice(index, 1);
 
             //it is necessary to call replace, as the currentPlayer index
             //will now be wrong
-            this.replace();
+            //this.replace();
+            this.restoreDrawnPlayer(curPlayer);
         } catch (e) {}
 
         this.through.push(player);
@@ -439,12 +456,14 @@ model.Game = class {
             //remove the player from the list
     	    this.through.splice(index, 1);
         } catch (e) {}
-
+        let curPlayer = this.toBeDrawn[this.currentPlayer];
         this.toBeDrawn.push(player);
 
         //it is necessary to call replace, as the currentPlayer index
         //will now be wrong
-        this.replace();
+        //this.replace();
+
+        this.restoreDrawnPlayer(curPlayer);
 
         this.subscribers.forEach((sub) => {
             sub.pushEvent({
