@@ -513,11 +513,6 @@ model.Model = class {
     }
 
     disposeGame(id) {
-        //wait a minute before disposing
-        setTimeout(() => {
-            if (this.games[id] && this.games[id].subscribers.length === 0) {
-                delete this.games[id];
-            }
-        }, 600000);
+        //removed because it was improperly implemented
     }
 };
