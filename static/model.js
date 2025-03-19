@@ -195,7 +195,7 @@ var model = (function() {
             new_uri = "ws:";
         }
         new_uri += "//" + loc.host;
-        new_uri += loc.pathname + gameId;
+        new_uri += loc.pathname +'ws/' + gameId;
         ws = new WebSocket(new_uri);
         //ws = new WebSocket("ws://echo.websocket.org");
         ws.addEventListener("open", function () {

@@ -26,9 +26,10 @@ app.use(bodyParser.json());
 app.post("/newgame", controller.newGame);
 
 // handle incoming WebSocket connections
-app.ws('/:gameid', function(ws, req) {
+app.ws('/ws/:gameid', function(ws, req) {
     //connect to the game
     let gameId = req.params.gameid;
+    console.log('new connection to ' + gameId);
     let game = model.getGame(gameId);
 
     let client = new modelModule.Client(ws);
